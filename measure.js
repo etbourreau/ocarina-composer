@@ -1,5 +1,5 @@
 const MeasureCmp = {
-  props: ["data", "signature"],
+  props: ["data", "signature", "playInProgress", "notePlayed"],
   methods: {
     isFull() {
       let sum = 0;
@@ -26,9 +26,12 @@ const MeasureCmp = {
               :key="i"
               :data="note"
               :signature="signature"
+              :playInProgress="playInProgress"
+              :played="notePlayed == i"
               @update="$emit('update')"
               @delete="$emit('deletenote', i)"
-              @add="$emit('addnote', i)">
+              @add="$emit('addnote', i)"
+              @play="$emit('playfrom', i)">
             </NoteCmp>
         </div>
     `,

@@ -151,11 +151,14 @@ for (let i = 0; i < NOTES.length; i++) {
 const app = {
   setup() {
     return {
+      header: ref(),
       songs: ref([]),
       selectedSong: ref(0),
       measures: ref([]),
       renderKey: ref(0),
       signature: ref(4),
+      playInProgress: ref(false),
+      playBar: ref(null),
     };
   },
   methods: {
@@ -319,9 +322,17 @@ const app = {
       this.songs = songs;
       localStorage.setItem("songs", JSON.stringify(this.songs));
     },
+    updatePlayBar(data) {
+      this.playBar = data;
+      this.playInProgress = data != null;
+    },
+    playFrom(iMeasure, iNote) {
+      this.header.play({ measure: iMeasure, note: iNote });
+    },
   },
   template: `
     <HeaderCmp
+      ref="header"
       :songs="songs"
       :measures="measures"
       :signature="signature"
@@ -330,17 +341,22 @@ const app = {
       @loadsong="loadSong"
       @removesong="removeSong"
       @savesong="saveSong"
-      @songsupdate="updateSongs"/>
-    {{signature}}
-    <div class="measures">
-      <MeasureCmp v-for="(measure, i) in measures"
-        :key="i+'-'+renderKey"
-        :data="measure"
-        :signature="signature"
-        @update="updateMeasures"
-        @deletenote="function(iNote) { deleteNote(i, iNote) }"
-        @addnote="function(iPreviousNote) {addNote(i, iPreviousNote)}">
-      </MeasureCmp>
+      @songsupdate="updateSongs"
+      @playbar="updatePlayBar"/>
+    <div class="container">
+      <div class="measures">
+        <MeasureCmp v-for="(measure, i) in measures"
+          :key="i+'-'+renderKey"
+          :data="measure"
+          :signature="signature"
+          :playInProgress="playInProgress"
+          :notePlayed="playBar && playBar.measure == i ? playBar.note : null"
+          @update="updateMeasures"
+          @deletenote="function(iNote) { deleteNote(i, iNote) }"
+          @addnote="function(iPreviousNote) {addNote(i, iPreviousNote)}"
+          @playfrom="function(iNote) { playFrom(i, iNote) }">
+        </MeasureCmp>
+      </div>
     </div>
   `,
   mounted() {

@@ -1,5 +1,5 @@
 const NoteCmp = {
-  props: ["data", "signature"],
+  props: ["data", "signature", "playInProgress", "played"],
   setup(props) {
     return {
       props: props,
@@ -10,6 +10,7 @@ const NoteCmp = {
       sharp: ref(
         props.data.note && props.data.note.label.indexOf("&#9839;") != -1
       ),
+      element: ref(),
     };
   },
   methods: {
@@ -82,7 +83,7 @@ const NoteCmp = {
       if (this.note && targetNote.id == this.note.id) {
         this.duration /= 2;
         if (this.duration < 0.125) {
-          this.duration = 4
+          this.duration = 4;
           while (this.duration > this.signature) {
             this.duration /= 2;
           }
@@ -149,8 +150,19 @@ const NoteCmp = {
       }
     },
   },
+  watch: {
+    played(newVal) {
+      if (newVal) {
+        this.element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "start",
+        });
+      }
+    },
+  },
   template: `
-      <div class="note-wrapper">
+      <div class="note-wrapper" ref="element">
         <OcarinaViewerCmp v-if="note" :note="note"></OcarinaViewerCmp>
         <div v-else class="silence-wrapper">
           <p>Silence</p>
@@ -201,6 +213,12 @@ const NoteCmp = {
             <div class="add-note" @click="$emit('add')">
               <span>+</span>
             </div>
+            <div class="play-bar" v-if="played"></div>
+        </div>
+        <div class="play-wrapper">
+          <button class="btn-play small hoverable"
+            :class="{disabled: !!playInProgress}"
+            @click="!playInProgress && $emit('play')" />
         </div>
       </div>
     `,

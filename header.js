@@ -17,56 +17,68 @@ const HeaderCmp = {
   },
   methods: {
     playTick() {
-      if (!this.playProcess) {
+      if (!this.playProcess || this.playProcess.stopTimeout) {
         return;
       }
       let now = new Date().getTime();
       if (now >= this.playProcess.targetTime) {
         let note = this.playProcess.notes[this.playProcess.iNote];
+        this.$emit("playbar", note.origin);
         if (note.audio) {
           note.audio.pause();
           note.audio.currentTime = 0;
           note.audio.play();
         }
+        let noteDuration = (60000 / this.playBpm) * note.duration;
         if (this.playProcess.iNote < this.playProcess.notes.length - 1) {
           this.playProcess.iNote++;
-          this.playProcess.targetTime =
-            now + (60000 / this.playBpm) * note.duration;
-        } else if (this.playRepeat) {
+          this.playProcess.targetTime = now + noteDuration;
+        } else if (this.playRepeat && this.playProcess.countNotes > 2) {
           this.playProcess.iNote = 0;
-          this.playProcess.targetTime =
-            now + (60000 / this.playBpm) * note.duration;
+          this.playProcess.targetTime = now + noteDuration;
         } else {
-          this.stop();
+          this.playProcess.stopTimeout = setTimeout(this.stop, noteDuration);
         }
       }
     },
-    play(from) {
+    play(fromOrigin) {
       let notes = [];
-      this.measures.forEach((measure) => {
-        measure.notes.forEach((note) => {
+      let count = 0;
+      let countActualNotes = 0;
+      let startNote = 0;
+      this.measures.forEach((measure, i) => {
+        measure.notes.forEach((note, j) => {
           note.duration = parseFloat(note.duration);
           notes.push({
             audio: note.note && AUDIO_NOTES[note.note.id],
             duration: note.duration,
+            origin: {
+              measure: i,
+              note: j,
+            },
           });
+          if (fromOrigin && fromOrigin.measure === i && fromOrigin.note === j) {
+            startNote = count;
+          }
+          if (note.note) {
+            countActualNotes++;
+          }
+          count++;
         });
       });
-      if (from) {
-        notes = notes.slice(from);
-      }
 
       this.playProcess = {
         process: setInterval(this.playTick, 1),
         notes: notes,
-        iNote: 0,
+        countNotes: countActualNotes,
+        iNote: startNote,
         targetTime: new Date().getTime(),
       };
     },
     stop() {
+      this.$emit("playbar", null);
       clearInterval(this.playProcess.process);
       this.playProcess = null;
-      this.playRepeat = false;
     },
     newSong() {
       this.lastSong = "";
@@ -233,18 +245,17 @@ const HeaderCmp = {
   template: `
         <div class="header">
             <div class="left">
-                <span>
-                    <button v-if="!playProcess" @click="play">Play</button>
-                    <button v-else @click="stop">Stop</button>
-                    <span v-if="playProcess">
-                        <input type="checkbox"
-                            id="repeat"
-                            v-model="playRepeat" />
-                        <label for="repeat">Repeat</label>
-                    </span>
+                <span class="flex-center">
+                    <button v-if="!playProcess" class="btn-play" @click="play" />
+                    <button v-else class="btn-play stop" @click="stop">Stop</button>
+                    <input type="checkbox"
+                        id="repeat"
+                        class="repeat"
+                        v-model="playRepeat" />
+                    <label for="repeat"></label>
                 </span>
                 <span>
-                    <input type="range" min="40" max="220" v-model="playBpm">
+                    <input type="range" class="slider" min="40" max="220" v-model="playBpm">
                     <span> BPM {{playBpm}}</span>
                 </span>
                 <span>
@@ -260,8 +271,7 @@ const HeaderCmp = {
                     v-if="measures.length > 1"
                     @click="newSong">New</button>
                 <span v-if="songs.length >= 1">
-                    <label for="song" v-if="songs.length > 1">Song</label>
-                    <select id="song" v-if="songs.length > 1" v-model="selectedSong" @change="changeSong">
+                    <select v-if="songs.length > 1" v-model="selectedSong" @change="changeSong">
                         <option v-for="(song, i) in songs" :key="i" :value="i">{{song.name}}</option>
                     </select>
                     <span v-else>Song : {{songs[0].name}}</span>

@@ -10,6 +10,22 @@ body {
   color: #ddd;
 }
 
+html,
+body,
+#app {
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+}
+#app .container {
+  flex-grow: 1;
+  overflow: auto;
+}
+
 .header {
   width: 90%;
   margin: 0 auto;
@@ -31,7 +47,96 @@ body {
   width: fit-content;
 }
 .header > .left > button {
-  padding: .5em;
+  padding: 0.5em;
+}
+
+.header .slider {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+}
+.header .slider:focus {
+  outline: none;
+}
+.header .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid #000000;
+  height: 2em;
+  width: 1em;
+  border-radius: 0.3em;
+  background: #ccc;
+  cursor: pointer;
+  margin-top: -14px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  transform: translateY(20%);
+}
+.header .slider::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 2em;
+  width: 1em;
+  border-radius: 0.3em;
+  background: #ccc;
+  cursor: pointer;
+  transform: translateY(20%);
+}
+.header .slider::-ms-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 2em;
+  width: 1em;
+  border-radius: 0.3em;
+  background: #ccc;
+  cursor: pointer;
+  transform: translateY(20%);
+}
+.header .slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.7em;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #888;
+  border-radius: 1.3px;
+  border: none;
+}
+.header .slider::-moz-range-track {
+  width: 100%;
+  height: 0.7em;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #888;
+  border-radius: 1.3px;
+  border: none;
+}
+.header .slider::-ms-track {
+  width: 100%;
+  height: 0.7em;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  border-width: 16px 0;
+  color: transparent;
+}
+.header .slider::-ms-fill-lower {
+  background: #888;
+  border: none;
+  border-radius: 2.6px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+.header .slider::-ms-fill-upper {
+  background: #888;
+  border: none;
+  border-radius: 2.6px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+.header .slider:focus::-webkit-slider-runnable-track {
+  background: #aaa;
+}
+.header .slider:focus::-ms-fill-lower {
+  background: #aaa;
+}
+.header .slider:focus::-ms-fill-upper {
+  background: #aaa;
 }
 
 .measures {
@@ -283,4 +388,95 @@ body {
 }
 .measure-buttons .change-note > .down:after {
   transform: translate(-0.36em, -0.1em) rotate(-90deg);
+}
+
+.measure-buttons .play-bar {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 50%;
+  width: 0.5em;
+  background-color: rgba(0, 255, 0, 0.6);
+  z-index: 6;
+}
+
+.play-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button.btn-play {
+  background-color: transparent;
+  color: transparent;
+  border: none;
+  aspect-ratio: 1;
+  width: 3em;
+  position: relative;
+}
+button.btn-play.disabled {
+  opacity: 0;
+}
+button.btn-play.small {
+  width: 2em;
+}
+button.btn-play:not(.disabled):after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  content: "▶";
+  font-size: 3em;
+  color: #3f3;
+  cursor: pointer;
+}
+button.btn-play.small:after {
+  font-size: 2em;
+}
+button.btn-play.stop:after {
+  content: "■";
+  font-size: 5em;
+  transform: translateY(-0.1em);
+  color: #f00;
+}
+button.btn-play.hoverable {
+  opacity: 0.2;
+  transition: opacity 0.2 ease;
+}
+button.btn-play.hoverable:hover {
+  opacity: 1;
+}
+
+input.repeat {
+  display: none;
+}
+input.repeat + label {
+  color: transparent;
+  aspect-ratio: 1;
+  width: 3em;
+  position: relative;
+}
+input.repeat + label:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  content: "⟳";
+  font-size: 2.5em;
+  color: #888;
+  cursor: pointer;
+}
+input.repeat:checked + label:after {
+  color: #3f3;
 }
