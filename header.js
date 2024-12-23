@@ -82,7 +82,9 @@ const HeaderCmp = {
     },
     newSong() {
       this.lastSong = "";
+      this.signature = 4;
       this.$emit("newsong");
+      this.$emit("signature", this.signature);
       if (this.playProcess) {
         this.stop();
       }
@@ -110,6 +112,14 @@ const HeaderCmp = {
     removeSong() {
       this.lastSong = "";
       this.$emit("removesong", this.selectedSong);
+      this.selectedSong = 0;
+      if (this.playProcess) {
+        this.stop();
+      }
+    },
+    removeAllSongs() {
+      this.lastSong = "";
+      this.$emit("removeallsong");
       this.selectedSong = 0;
       if (this.playProcess) {
         this.stop();
@@ -283,6 +293,7 @@ const HeaderCmp = {
                   <button @click="exportSongs">Export songs</button>
                   <button @click="importSongs">Import songs</button>
                   <button @click="importDefaultSongs" v-if="songs.length == 0">Import default songs</button>
+                  <button @click="removeAllSongs" v-else>Remove all songs</button>
                 </span>
             </div>
         </div>

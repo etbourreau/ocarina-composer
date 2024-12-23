@@ -46,6 +46,8 @@ const NoteCmp = {
     },
     update(note, duration) {
       if (note && (!this.note || note.id != this.note.id)) {
+        AUDIO_NOTES[note.id].pause();
+        AUDIO_NOTES[note.id].currentTime = 0;
         AUDIO_NOTES[note.id].play();
       }
       this.props.data.note = note;

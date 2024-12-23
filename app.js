@@ -276,6 +276,12 @@ const app = {
         localStorage.setItem("songs", JSON.stringify(this.songs));
       }
     },
+    removeAllSongs() {
+      if (confirm("Are you sure?")) {
+        this.songs = [];
+        localStorage.removeItem("songs");
+      }
+    },
     saveSong(name, bpm, signature) {
       let existingIndex;
       this.songs.forEach((song, i) => {
@@ -316,10 +322,14 @@ const app = {
           duration: 1,
         },
       ]);
-      this.signature = 4;
     },
-    updateSongs(songs) {
-      this.songs = songs;
+    updateSongs(newSongs) {
+      newSongs.forEach((s) => {
+        if (!this.songs.some((s2) => s2.name === s.name)) {
+          this.songs.push(s);
+        }
+      });
+      this.songs = this.songs.sort((a, b) => a.name.localeCompare(b.name));
       localStorage.setItem("songs", JSON.stringify(this.songs));
     },
     updatePlayBar(data) {
@@ -340,6 +350,7 @@ const app = {
       @newsong="newSong"
       @loadsong="loadSong"
       @removesong="removeSong"
+      @removeallsong="removeAllSongs"
       @savesong="saveSong"
       @songsupdate="updateSongs"
       @playbar="updatePlayBar"/>
