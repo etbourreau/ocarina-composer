@@ -219,6 +219,7 @@ const HeaderCmp = {
       fetch("./default_songs.json")
         .then((resp) => resp.json())
         .then((data) => {
+          console.log(data)
           let songs = JSON.parse(data);
           songs = this.validateImportedSongs(songs);
           if (songs) {
