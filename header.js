@@ -218,9 +218,7 @@ const HeaderCmp = {
     importDefaultSongs() {
       fetch("./default_songs.json")
         .then((resp) => resp.json())
-        .then((data) => {
-          console.log(data)
-          let songs = JSON.parse(data);
+        .then((songs) => {
           songs = this.validateImportedSongs(songs);
           if (songs) {
             songs = songs.sort((a, b) => a.name.localeCompare(b.name));
